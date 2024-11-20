@@ -1,8 +1,11 @@
 package com.example.pawpal.controllers;
 
 import com.example.pawpal.dto.UserDto;
+import com.example.pawpal.entities.PetEntity;
 import com.example.pawpal.entities.UserEntity;
 import com.example.pawpal.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,18 +14,24 @@ import java.util.List;
 @RequestMapping("/users/")
 public class UsersController {
 
+    @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/get-all")
-    public List<UserEntity> getAllUsers(@RequestParam(value = "username", required = false) String username) {
-        if (username == null) {
+    @GetMapping("get-all")
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @GetMapping("get/{username}")
+    public List<UserEntity> getUser(@PathVariable(value = "username") String username) {
+        if (username != null && !username.isEmpty()) {
             return userRepository.findAllByUsernameContainingIgnoreCase(username);
         } else {
             return userRepository.findAll();
         }
     }
 
-    @PostMapping("/create")
+    @PostMapping("create")
     public UserEntity create(@RequestBody UserEntity user) {
         return userRepository.save(user);
     }

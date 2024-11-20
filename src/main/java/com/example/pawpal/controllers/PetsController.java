@@ -3,9 +3,13 @@ package com.example.pawpal.controllers;
 import com.example.pawpal.dto.PetUpdateDto;
 import com.example.pawpal.dto.SuccessDto;
 import com.example.pawpal.entities.PetEntity;
+import com.example.pawpal.entities.PostPetEntity;
 import com.example.pawpal.repositories.PetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/pets/")
@@ -14,9 +18,14 @@ public class PetsController {
     @Autowired
     private PetRepository petRepository;
 
-    @GetMapping("get-all")
+    @GetMapping("get/{id}")
     public PetEntity getPetById(@PathVariable("id") Long id) {
         return petRepository.findById(id).orElseThrow();
+    }
+
+    @GetMapping("get-all")
+    public ResponseEntity<List<PetEntity>> getAllPosts() {
+        return ResponseEntity.ok(petRepository.findAll());
     }
 
     @PostMapping("create")
