@@ -4,7 +4,9 @@ import com.example.pawpal.dto.PetUpdateDto;
 import com.example.pawpal.dto.SuccessDto;
 import com.example.pawpal.entities.PetEntity;
 import com.example.pawpal.entities.PostPetEntity;
+import com.example.pawpal.entities.UserEntity;
 import com.example.pawpal.repositories.PetRepository;
+import com.example.pawpal.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,9 @@ public class PetsController {
 
     @Autowired
     private PetRepository petRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("get/{id}")
     public PetEntity getPetById(@PathVariable("id") Long id) {
@@ -56,6 +61,11 @@ public class PetsController {
         }
         if (pet.getSpecies() != null) {
             toUpdate.setSpecies(pet.getSpecies());
+        }
+        if (pet.getUserId() != null) {
+            UserEntity user = userRepository.findById(pet.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            toUpdate.setUser(user);  // Set the user to the pet entity
         }
         return petRepository.save(toUpdate);
     }

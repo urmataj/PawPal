@@ -36,7 +36,7 @@ public class UsersController {
         return userRepository.save(user);
     }
 
-    @PutMapping("update/{id}")
+    @PatchMapping("update/{id}")
     public UserEntity update(@RequestBody UserDto user, @PathVariable Long id){
         UserEntity toUpdate = userRepository.findById(id).get();
         if (toUpdate.getUsername() != null) {
