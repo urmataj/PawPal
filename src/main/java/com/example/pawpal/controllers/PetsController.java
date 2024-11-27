@@ -62,10 +62,8 @@ public class PetsController {
         if (pet.getSpecies() != null) {
             toUpdate.setSpecies(pet.getSpecies());
         }
-        if (pet.getUserId() != null) {
-            UserEntity user = userRepository.findById(pet.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            toUpdate.setUser(user);  // Set the user to the pet entity
+        if (pet.getId() != null) {
+            toUpdate.setId(pet.getId());
         }
         return petRepository.save(toUpdate);
     }
