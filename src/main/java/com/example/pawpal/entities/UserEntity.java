@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(
@@ -24,10 +25,9 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     String username;
 
-    @Column(nullable = false)
     String name;
 
     String password;
@@ -37,6 +37,9 @@ public class UserEntity {
     String phone;
 
     LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<PetEntity> pets;
 
     @PrePersist
     void init() {this.createdAt = LocalDateTime.now();}

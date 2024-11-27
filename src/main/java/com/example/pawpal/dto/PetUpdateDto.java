@@ -7,6 +7,8 @@ import lombok.Data;
 @Builder
 public class PetUpdateDto {
 
+    private Long id;
+
     private String name;
 
     private String species;
