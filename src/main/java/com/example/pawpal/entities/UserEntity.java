@@ -1,5 +1,7 @@
 package com.example.pawpal.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -38,8 +40,9 @@ public class UserEntity {
 
     LocalDateTime createdAt;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
-    private List<PetEntity> pets;
+    List<PetEntity> pets;
 
     @PrePersist
     void init() {this.createdAt = LocalDateTime.now();}

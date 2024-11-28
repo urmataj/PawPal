@@ -33,7 +33,7 @@ public class PetEntity {
     private Integer weight;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 
 }
