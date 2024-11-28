@@ -1,5 +1,6 @@
 package com.example.pawpal.dto;
 
+import com.example.pawpal.entities.UserEntity;
 import lombok.Builder;
 import lombok.Data;
 
@@ -23,4 +24,5 @@ public class PetUpdateDto {
 
     private Integer weight;
 
+    private UserEntity user;
 }
