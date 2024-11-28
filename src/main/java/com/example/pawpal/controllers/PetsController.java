@@ -5,12 +5,18 @@ import com.example.pawpal.dto.SuccessDto;
 import com.example.pawpal.entities.PetEntity;
 import com.example.pawpal.entities.PostPetEntity;
 import com.example.pawpal.entities.UserEntity;
+import com.example.pawpal.exceptions.ApiException;
 import com.example.pawpal.repositories.PetRepository;
 import com.example.pawpal.repositories.UserRepository;
+import com.example.pawpal.services.PetsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,59 +24,49 @@ import java.util.List;
 public class PetsController {
 
     @Autowired
-    private PetRepository petRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private PetsService petsService;
 
     @GetMapping("get/{id}")
-    public PetEntity getPetById(@PathVariable("id") Long id) {
-        return petRepository.findById(id).orElseThrow();
+    public PetUpdateDto getPetById(@PathVariable("id") Long id) {
+        return petsService.getPetById(id)
+                .orElseThrow(() -> new ApiException(
+                        String.format("Pet with id:%d Not Found", id), HttpStatusCode.valueOf(404)
+                ));
     }
 
     @GetMapping("get-all")
-    public ResponseEntity<List<PetEntity>> getAllPosts() {
-        return ResponseEntity.ok(petRepository.findAll());
+    public ResponseEntity<List<PetUpdateDto>> getAllPosts() {
+        return ResponseEntity.ok(petsService.getAllPets());
     }
 
     @PostMapping("create")
-    public PetEntity create (@RequestBody PetEntity pet) {
-        return petRepository.save(pet);
+    public ResponseEntity<PetUpdateDto> create (@Validated @RequestBody PetUpdateDto pet) {
+        pet.setId(null);
+        PetUpdateDto savedPet = petsService.savePet(pet);
+        return ResponseEntity
+                .created(URI.create("/pets/create/" + savedPet.getId()))
+                .body(savedPet);
     }
 
     @PutMapping("update/{id}")
-    public PetEntity update (@RequestBody PetUpdateDto pet, @PathVariable("id") Long id) {
-        PetEntity toUpdate = petRepository.findById(id).get();
-        if (pet.getName() != null) {
-            toUpdate.setName(pet.getName());
-        }
-        if (pet.getBreed() != null) {
-            toUpdate.setBreed(pet.getBreed());
-        }
-        if (pet.getGender() != null) {
-            toUpdate.setGender(pet.getGender());
-        }
-        if (pet.getAge() != null) {
-            toUpdate.setAge(pet.getAge());
-        }
-        if (pet.getWeight() != null) {
-            toUpdate.setWeight(pet.getWeight());
-        }
-        if (pet.getColor() != null) {
-            toUpdate.setColor(pet.getColor());
-        }
-        if (pet.getSpecies() != null) {
-            toUpdate.setSpecies(pet.getSpecies());
-        }
-        if (pet.getId() != null) {
-            toUpdate.setId(pet.getId());
-        }
-        return petRepository.save(toUpdate);
+    public ResponseEntity<PetUpdateDto> update (@Validated @RequestBody PetUpdateDto pet, @PathVariable("id") Long id) {
+        petsService.getPetById(id)
+                .orElseThrow(() -> new ApiException(
+                        String.format("Pet with id %d not found", id),
+                        HttpStatusCode.valueOf(404)
+                ));
+        pet.setId(id);
+        PetUpdateDto updatedPet = petsService.savePet(pet);
+        return ResponseEntity.ok(updatedPet);
     }
 
     @DeleteMapping("delete/{id}")
     public SuccessDto delete(@PathVariable("id") Long id){
-        petRepository.deleteById(id);
+        petsService.getPetById(id)
+                .orElseThrow(() -> new ApiException(
+                        String.format("Pet with id %d not found", id), HttpStatusCode.valueOf(404)
+                ));
+        petsService.deletePet(id);
         return new SuccessDto();
     }
 

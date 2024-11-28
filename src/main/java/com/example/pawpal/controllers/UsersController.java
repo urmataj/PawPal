@@ -1,13 +1,17 @@
 package com.example.pawpal.controllers;
 
 import com.example.pawpal.dto.UserDto;
-import com.example.pawpal.entities.PetEntity;
 import com.example.pawpal.entities.UserEntity;
+import com.example.pawpal.exceptions.ApiException;
 import com.example.pawpal.repositories.UserRepository;
+import com.example.pawpal.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -15,15 +19,18 @@ import java.util.List;
 public class UsersController {
 
     @Autowired
+    private UsersService usersService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @GetMapping("get-all")
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return ResponseEntity.ok(usersService.getAllUsers());
     }
 
     @GetMapping("get/{username}")
-    public List<UserEntity> getUser(@PathVariable(value = "username") String username) {
+    public List<UserEntity> getUserByUsername(@PathVariable(value = "username") String username) {
         if (username != null && !username.isEmpty()) {
             return userRepository.findAllByUsernameContainingIgnoreCase(username);
         } else {
@@ -32,29 +39,24 @@ public class UsersController {
     }
 
     @PostMapping("create")
-    public UserEntity create(@RequestBody UserEntity user) {
-        return userRepository.save(user);
+    public ResponseEntity<UserDto> create(@Validated @RequestBody UserDto user) {
+        user.setUsername(null);
+        UserDto savedUser = usersService.saveUser(user);
+        return ResponseEntity
+                .created(URI.create("/pets/create" + savedUser.getUsername()))
+                .body(savedUser);
     }
 
-    @PatchMapping("update/{id}")
-    public UserEntity update(@RequestBody UserDto user, @PathVariable Long id){
-        UserEntity toUpdate = userRepository.findById(id).get();
-        if (toUpdate.getUsername() != null) {
-            toUpdate.setUsername(user.getUsername());
-        }
-        if (toUpdate.getName() != null) {
-            toUpdate.setName(user.getName());
-        }
-        if (toUpdate.getPassword() != null) {
-            toUpdate.setPassword(user.getPassword());
-        }
-        if (toUpdate.getEmail() != null) {
-            toUpdate.setEmail(user.getEmail());
-        }
-        if (toUpdate.getPhone() != null) {
-            toUpdate.setPhone(user.getPhone());
-        }
-        return userRepository.save(toUpdate);
+    @PutMapping("update/{id}")
+    public ResponseEntity<UserDto> update(@Validated @RequestBody UserDto user, @PathVariable Long id){
+        usersService.getUserById(id)
+                .orElseThrow(() -> new ApiException(
+                        String.format("User with id %d not found", id),
+                        HttpStatusCode.valueOf(404)
+                ));
+        user.setId(id);
+        UserDto updatedUser = usersService.saveUser(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
 }
