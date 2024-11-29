@@ -9,6 +9,7 @@ import com.example.pawpal.exceptions.ApiException;
 import com.example.pawpal.repositories.PetRepository;
 import com.example.pawpal.repositories.UserRepository;
 import com.example.pawpal.services.PetsService;
+import com.example.pawpal.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -25,6 +26,9 @@ public class PetsController {
 
     @Autowired
     private PetsService petsService;
+
+    @Autowired
+    private UsersService usersService;
 
     @GetMapping("get/{id}")
     public PetUpdateDto getPetById(@PathVariable("id") Long id) {

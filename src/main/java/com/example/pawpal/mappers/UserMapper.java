@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface UserMapper {
 
-//    @Mapping(target = "pets.users", ignore = true)
+    @Mapping(target = "pets.user", ignore = true)
     UserEntity userDtoToUserEntity(UserDto userDto);
 
-//    @Mapping(target = "pets.users", ignore = true)
+    @Mapping(target = "pets.user", ignore = true)
     UserDto userEntityToUserDto(UserEntity user);
 }

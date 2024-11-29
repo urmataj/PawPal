@@ -1,11 +1,15 @@
 package com.example.pawpal.dto;
 
 import com.example.pawpal.entities.UserEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PetUpdateDto {
 
     private Long id;
@@ -24,5 +28,5 @@ public class PetUpdateDto {
 
     private Integer weight;
 
-    private UserEntity user;
+    private Long userId;
 }

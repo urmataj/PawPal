@@ -1,7 +1,9 @@
 package com.example.pawpal.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +25,13 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserEntity {
 
+    @JsonCreator
+    public static UserEntity fromId(@JsonProperty("id") Long id) {
+        UserEntity user = new UserEntity();
+        user.setId(id);
+        return user;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -40,7 +49,7 @@ public class UserEntity {
 
     LocalDateTime createdAt;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     List<PetEntity> pets;
 

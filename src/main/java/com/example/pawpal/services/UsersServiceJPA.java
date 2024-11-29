@@ -75,4 +75,14 @@ public class UsersServiceJPA implements UsersService {
         }
         return new SuccessDto();
     }
+
+    @Override
+    public Optional<Object> findById(Long id) {
+        return Optional.ofNullable(
+                userMapper.userEntityToUserDto(
+                        userRepository.findById(id)
+                                .orElse(null)
+                )
+        );
+    }
 }

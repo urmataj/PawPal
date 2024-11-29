@@ -40,7 +40,6 @@ public class UsersController {
 
     @PostMapping("create")
     public ResponseEntity<UserDto> create(@Validated @RequestBody UserDto user) {
-        user.setUsername(null);
         UserDto savedUser = usersService.saveUser(user);
         return ResponseEntity
                 .created(URI.create("/pets/create" + savedUser.getUsername()))
