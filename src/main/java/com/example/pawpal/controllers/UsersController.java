@@ -1,5 +1,6 @@
 package com.example.pawpal.controllers;
 
+import com.example.pawpal.dto.SuccessDto;
 import com.example.pawpal.dto.UserDto;
 import com.example.pawpal.entities.UserEntity;
 import com.example.pawpal.exceptions.ApiException;
@@ -56,6 +57,16 @@ public class UsersController {
         user.setId(id);
         UserDto updatedUser = usersService.saveUser(user);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("delete/{id}")
+    public SuccessDto delete(@PathVariable("id") Long id){
+        usersService.getUserById(id)
+                .orElseThrow(() -> new ApiException(
+                        String.format("Pet with id %d not found", id), HttpStatusCode.valueOf(404)
+                ));
+        usersService.deleteUser(id);
+        return new SuccessDto();
     }
 
 }
